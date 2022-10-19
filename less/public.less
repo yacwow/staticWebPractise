@@ -1,0 +1,147 @@
+.browser(@prop, @value) {
+  -webkit-@{prop}: @value;
+  -moz-@{prop}: @value;
+  -ms-@{prop}: @value;
+  -o-@{prop}: @value;
+  @{prop}: @value;
+}
+
+.ts(@prop) {
+  .browser(transition, @prop);
+}
+
+.tf(@prop) {
+  .browser(transform, @prop);
+}
+.tf-o(@prop) {
+  .browser(transform-origin, @prop);
+}
+.td(@prop) {
+  .browser(transition-delay, @prop);
+}
+.ani(@prop) {
+  .browser(animation, @prop);
+}
+.ani-delay(@prop) {
+  .browser(animation-delay, @prop);
+}
+.size(@width, @height) {
+  width: @width;
+  height: @height;
+}
+
+.square(@width) {
+  .size(@width, @width);
+}
+.w100 {
+  width: 100%;
+}
+.h100 {
+  height: 100%;
+}
+.flex {
+  display: -webkit-flex;
+  display: flex;
+}
+.wrap {
+  flex-wrap: wrap;
+}
+.w-space-nowrap {
+  white-space: nowrap;
+}
+.hide {
+  display: none;
+}
+.inline-block {
+  display: inline-block;
+}
+.block {
+  display: block;
+}
+.inline {
+  display: inline;
+}
+.fixed {
+  position: fixed;
+}
+.relative {
+  position: relative;
+}
+.absolute {
+  position: absolute;
+}
+.content-box {
+  .browser(box-sizing, content-box);
+}
+.border-box {
+  .browser(box-sizing, border-box);
+}
+.no-float {
+  float: none;
+}
+.pull-left {
+  float: left;
+}
+.pull-right {
+  float: right;
+}
+.text-center {
+  text-align: center;
+}
+.text-left {
+  text-align: left;
+}
+.text-right {
+  text-align: right;
+}
+.font-weight-20 {
+  font-weight: 200;
+}
+.text-underline {
+  text-decoration: underline;
+}
+.o-hidden {
+  overflow: hidden;
+}
+.v-align-top {
+  vertical-align: top;
+}
+.position(@top, @left) {
+  top: @top;
+  left: @left;
+}
+.bg-position(@top, @left) {
+  background-position: @top @left;
+}
+.opacity(@val) {
+  -moz-opacity: @val;
+  -khtml-opacity: @val;
+  opacity: @val;
+}
+.select(@select) {
+  -webkit-user-select: @select;
+  user-select: @select;
+}
+.text-underline {
+  text-decoration: underline;
+}
+
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+  .col-sm-7-1 {
+    float: left;
+    width: calc(100% / 7);
+  }
+  .col-sm-7-1::after {
+    content: "";
+    display: block;
+    clear: both;
+    height: 0;
+    overflow: hidden;
+  }
+}

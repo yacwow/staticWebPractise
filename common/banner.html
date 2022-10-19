@@ -1,0 +1,225 @@
+<div class="carousel banner" id="slide">
+  <!-- 轮播项 -->
+  <div class="carousel-inner">
+    <div class="item active">
+      <video muted id="video-tvc" src="./../video/index.mp4" class="video-tvc"></video>
+      <div class="carousel-caption text-box">
+        <h2 class="banner-til text-box-container">
+          <span>中国智慧合同物流的领跑者</span>
+        </h2>
+        <p class="banner-txt text-box-container">China's Smart Contract Logistics Leader</p>
+      </div>
+    </div>
+    <div class="item">
+      <img src="./../img/201905211121034826.jpg" alt="" />
+      <div class="carousel-caption text-box">
+        <h2 class="banner-til text-box-container">
+          <span>中国智慧合同物流的领跑者</span>
+        </h2>
+        <p class="banner-txt text-box-container">China's Smart Contract Logistics Leader</p>
+      </div>
+    </div>
+    <div class="item">
+      <img src="../img/201905211121122491.jpg" alt="" />
+      <div class="carousel-caption text-box">
+        <h2 class="banner-til text-box-container">
+          <span>中国智慧合同物流的领跑者</span>
+        </h2>
+        <p class="banner-txt text-box-container">China's Smart Contract Logistics Leader</p>
+      </div>
+    </div>
+  </div>
+  <!-- 轮播图按钮 -->
+  <ol class="carousel-indicators">
+    <li data-target="#slide" data-slide-to="0" class="active"></li>
+    <li data-target="#slide" data-slide-to="1"></li>
+    <li data-target="#slide" data-slide-to="2"></li>
+    <li class="play" id="carousel-control"></li>
+  </ol>
+</div>
+
+<script>
+  $(function () {
+    var $video = $("#video-tvc");
+    console.log($video);
+    
+    var video = $video[0];
+    video.play();
+
+    $video.on("timeupdate.next", videoEnd);
+
+    var $slide = $("#slide");
+    var play = {
+      interval: 2000,
+      pause: "",
+    };
+
+    var $item = $slide.find(".item");
+
+    var x1 = 0,
+      x2 = 0,
+      oldX = 0,
+      slideDirection = "",
+      slideRange = 50,
+      opacityStep = 0.1;
+
+    $slide
+      .carousel(play)
+      .carousel("pause")
+      .on("slid.bs.carousel", carousel)
+      .on("slide.bs.carousel", function () {
+        $item.find("h2 p").removeClass("ani fadeInUp animated");
+      })
+      .on("mousedown", function (e) {
+        slideState("pause");
+        oldX = x1 = e.pageX;
+        if (getActiveItemIndex() === 0) $video.off("timeupdate.next").on("ended.continue", videoContinue);
+        slideDirection = "";
+        $(this)
+          .on("mousemove.opacity", function (e) {
+            var $activeItem = getActiveItem();
+            var activeItemOpacity = formatOpacity($activeItem.css("opacity"));
+            x2 = e.pageX;
+
+            if (x2 - x1 > slideRange) {
+              var $nextItem = getNextItem();
+              var nextItemOpacity = formatOpacity($nextItem.css("opacity"));
+              slideDirection = "right";
+
+              if (x2 < oldX) {
+                activeItemOpacity += opacityStep;
+                nextItemOpacity -= opacityStep;
+              } else if (x2 > oldX) {
+                activeItemOpacity -= opacityStep;
+                nextItemOpacity += opacityStep;
+              }
+              $nextItem.css("opacity", formatOpacity(nextItemOpacity));
+            } else if (x1 - x2 > slideRange) {
+              var $prevItem = getPrevItem();
+              var prevItemOpacity = formatOpacity($prevItem.css("opacity"));
+              slideDirection = "left";
+              if (x2 < oldX) {
+                activeItemOpacity -= opacityStep;
+                prevItemOpacity += opacityStep;
+              } else if (x2 > oldX) {
+                activeItemOpacity += opacityStep;
+                prevItemOpacity -= opacityStep;
+              }
+              $prevItem.css("opacity", formatOpacity(prevItemOpacity));
+            } else {
+              $item.css("opacity", 0);
+              activeItemOpacity = 1;
+            }
+            $activeItem.css("opacity", formatOpacity(activeItemOpacity));
+            oldX = x2;
+          })
+          .on("mouseleave.reset", function (e) {
+            $(this).off("mousemove.opacity");
+            $item.prop("style", "");
+            control();
+          });
+      })
+      .on("mouseup", function (e) {
+        $(this).off("mousemove.opacity mouseleave.reset");
+        $item.prop("style", "");
+        if (slideDirection === "right") {
+          slideState("next");
+        } else if (slideDirection === "left") {
+          slideState("prev");
+        } else {
+          if (getActiveItemIndex() === 0) {
+            $video.off("ended.continue");
+            if (!bindOnceEvent($video, "timeupdate")) $video.on("timeupdate.next", videoEnd);
+          } else {
+            slideState(play);
+          }
+        }
+      })
+      .on("click", "#carousel-control", function () {
+        $(this).toggleClass("play pause");
+        control();
+      })
+      .on("mousedown mouseup", "#carousel-control", function (e) {
+        e.stopPropagation();
+      })
+      .find("img, video")
+      .on("dragstart", function (e) {
+        e.preventDefault();
+      });
+
+    function getActiveItemIndex() {
+      return getActiveItem().index();
+    }
+
+    function getActiveItem() {
+      return $("#slide .carousel-inner .item.active");
+    }
+
+    function getPrevItem() {
+      var index = getActiveItemIndex();
+      index--;
+      if (index < 0) index = $item.length - 1;
+      return $item.eq(index);
+    }
+
+    function getNextItem() {
+      var index = getActiveItemIndex();
+      index++;
+      if (index === $item.length) index = 0;
+      return $item.eq(index);
+    }
+
+    function formatOpacity(opacity) {
+      if (opacity > 1) opacity = 1;
+      if (opacity < 0) opacity = 0;
+      return Number(Number(opacity).toFixed(4));
+    }
+
+    function slideState(state) {
+      return $slide.carousel(state);
+    }
+
+    function videoContinue() {
+      video.currentTime = 0;
+      video.play();
+    }
+
+    function videoEnd() {
+      if (video.currentTime > video.duration - 0.001) slideState("next");
+    }
+    function carousel() {
+      if (getActiveItemIndex() === 0) {
+        setTimeout(function () {
+          slideState("pause");
+        }, 0);
+        videoContinue();
+      } else {
+        slideState(play);
+        video.pause();
+      }
+      $("#carousel-control")[0].className = "play";
+      getActiveItem().find("h2, p").addClass("ani fadeInUp animated");
+    }
+
+    function control() {
+      if ($("#carousel-control").hasClass("play")) {
+        if (getActiveItemIndex() === 0) {
+          $video.off("ended.continue");
+          if (!bindOnceEvent($video, "timeupdate")) $video.on("timeupdate.next", videoEnd);
+        } else {
+          slideState(play);
+        }
+      } else {
+        slideState("pause");
+        if (getActiveItemIndex() === 0) {
+          $video.off("timeupdate.next");
+          if (!bindOnceEvent($video, "ended")) $video.on("ended.continue", videoContinue);
+        }
+      }
+    }
+
+    function bindOnceEvent(ele, events) {
+      return $._data(ele[0], "events")[events] ? true : false;
+    }
+  });
+</script>
